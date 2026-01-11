@@ -617,11 +617,19 @@ function celebritylist_misc() {
                 // Tab Menü
                 eval("\$celebritylist_tab_menu .= \"".$templates->get("celebritylist_bit_tabs_menu")."\";");
 
-                $celebrity_query = $db->query("SELECT * FROM ".TABLE_PREFIX."celebritylist
-                WHERE accepted = 1 
-                AND type = '".$type."' 
-                ORDER BY COALESCE(NULLIF(username, ''), groupname) ASC"
-                );
+                if ($typecode == "checkbox") {
+                    $celebrity_query = $db->query("SELECT * FROM ".TABLE_PREFIX."celebritylist
+                    WHERE accepted = 1 
+                    AND (concat(',',type,',') LIKE '%,".$type.",%')
+                    ORDER BY COALESCE(NULLIF(username, ''), groupname) ASC"
+                    );
+                } else {
+                    $celebrity_query = $db->query("SELECT * FROM ".TABLE_PREFIX."celebritylist
+                    WHERE accepted = 1 
+                    AND type = '".$type."' 
+                    ORDER BY COALESCE(NULLIF(username, ''), groupname) ASC"
+                    );
+                }
 
                 $user_bit = "";
                 while($cel = $db->fetch_array($celebrity_query)) {
@@ -655,11 +663,7 @@ function celebritylist_misc() {
     // Bearbeiten - Speichern
     if($mybb->request_method == "post" && $mybb->input['action'] == "do_celebritylist_edit"){
 
-        if ($mybb->get_input('person_type') == 'single') {
-            if (empty($mybb->get_input('character'))) {
-                $errors[] = $lang->celebritylist_error_character;
-            }
-        } else {
+        if (!empty($mybb->get_input('groupname'))) {
             if (empty($mybb->get_input('group'))) {
                 $errors[] = $lang->celebritylist_error_group;
             }
