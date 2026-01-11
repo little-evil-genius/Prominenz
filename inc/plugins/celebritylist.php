@@ -15,6 +15,9 @@ $plugins->add_hook('misc_start', 'celebritylist_misc');
 $plugins->add_hook("modcp_nav", "celebritylist_modcp_nav");
 $plugins->add_hook("modcp_start", "celebritylist_modcp");
 $plugins->add_hook('fetch_wol_activity_end', 'celebritylist_online_activity');
+$plugins->add_hook("datahandler_user_update", "celebritylist_user_update");
+$plugins->add_hook("usercp_do_changename_end", "celebritylist_update_username");
+$plugins->add_hook("admin_user_users_delete_commit_end", "celebritylist_user_delete");
 $plugins->add_hook('build_friendly_wol_location_end', 'celebritylist_online_location');
 if(class_exists('MybbStuff_MyAlerts_AlertTypeManager')) {
     $plugins->add_hook('global_start', 'celebritylist_register_myalerts_formatter_back_compat'); // Backwards-compatible alert formatter registration hook-ins.
@@ -915,6 +918,75 @@ function celebritylist_modcp() {
         $db->query("UPDATE ".TABLE_PREFIX."celebritylist SET accepted = 1 WHERE cid = '".$cid."'");
         redirect("modcp.php?action=celebritylist", $lang->celebritylist_redirect_accepted);
     }
+}
+
+// WAS PASSIERT BEI USERNAME ÄNDERUNG
+// Admin CP
+function celebritylist_user_update($datahandler) {
+
+    global $db, $user;
+
+    if (!empty($datahandler->user_update_data['username']) && $datahandler->user_update_data['username'] != $user['username']) {
+
+        $old_username = $user['username'];
+        $new_username = $datahandler->user_update_data['username'];
+
+        $allcelebrity_query = $db->query("SELECT cid, username FROM ".TABLE_PREFIX."celebritylist c
+        WHERE uid = ".$user['uid']."
+        AND username != ''
+        ");
+
+        if ($db->num_rows($allcelebrity_query) > 0) {
+            while ($cel = $db->fetch_array($allcelebrity_query)) {
+
+                $update_username = array(
+                    'username' => $db->escape_string($new_username)
+                );
+
+                $db->update_query('celebritylist', $update_username, "cid='".$cel['cid']."'");
+            }
+        }
+    }
+}
+// User CP
+function celebritylist_update_username(){
+
+    global $db, $mybb;
+
+    // UID UND NEUER USERNAME
+    $changeChara = (int)$mybb->user['uid'];
+    $new_username = $db->escape_string($mybb->get_input('username'));
+
+    $allcelebrity_query = $db->query("SELECT cid, username FROM ".TABLE_PREFIX."celebritylist c
+    WHERE uid = ".$changeChara."
+    AND username != ''
+    ");
+
+    if ($db->num_rows($allcelebrity_query) > 0) {
+
+        while ($cel = $db->fetch_array($allcelebrity_query)) {
+
+            $update_username = array(
+                'username' => $db->escape_string($new_username)
+            );
+            
+            $db->update_query('celebritylist', $update_username, "cid='".$cel['cid']."'");
+        }
+    }
+}
+
+// WAS PASSIERT MIT EINEM GELÖSCHTEN USER
+function celebritylist_user_delete() {
+
+    global $db, $mybb, $user;
+
+    if ($mybb->settings['celebritylist_delete'] == 0) {
+        return;
+    } 
+
+    $deleteChara = (int)$user['username'];
+    
+    $db->delete_query("celebritylist", "username = ".$deleteChara);
 }
 
 // ONLINE LOCATION
