@@ -1,4 +1,4 @@
-# Prominenz
+# Prominenz - Berümheiten [Liste]
 Das Plugin erweitert das Forum um eine interaktive Liste berühmter Charaktere und Gruppen. Mitglieder können selbst Einträge erstellen. Neu Einträge müssen zunächst durch das Team im ModCP überprüft werden.
 Zu jedem Eintrag werden der Name, mindestens eine Tätigkeit - etwa Sänger:in, Schauspieler:in, Sportler:in, Band, usw. - sowie eine oder mehrere Branchen angegeben. Zusätzlich kann ein Beschreibungstext hinzugefügt werden, der wie ein kurzer Wikipedia-Artikel über den Charakter oder die Gruppe wirkt.<br>
 <br>
