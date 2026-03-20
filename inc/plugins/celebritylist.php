@@ -33,7 +33,7 @@ function celebritylist_info() {
 		"website"	=> "https://github.com/little-evil-genius/Prominenz",
 		"author"	=> "little.evil.genius",
 		"authorsite"	=> "https://storming-gates.de/member.php?action=profile&uid=1712",
-		"version"	=> "1.0",
+		"version"	=> "1.0.1",
 		"compatibility" => "18*"
 	);
 }
@@ -1296,9 +1296,9 @@ function celebritylist_multipage() {
     $multipage_setting = $mybb->settings['celebritylist_multipage'];
     $displaytypes = $mybb->settings['celebritylist_displaytypes'];
 
-    if ($displaytypes == 0 && $multipage_setting == 0) {
+	if ($displaytypes == 0 || $multipage_setting < 1) {
         return ['multipage_sql' => '', 'multipage' => ''];
-    }
+	}
       
     $filterData = celebritylist_filter();
     $filter_multipage = $filterData['filter_multipage'];
