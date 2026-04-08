@@ -990,7 +990,7 @@ function celebritylist_user_delete() {
 
     $deleteChara = $user['username'];
     
-    $db->delete_query("celebritylist", "username = '".$deleteChara."');
+    $db->delete_query("celebritylist", "username = '".$deleteChara."'");
 }
 
 // ONLINE LOCATION
